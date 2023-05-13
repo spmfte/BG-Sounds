@@ -30,7 +30,7 @@ If you encounter any additional quirks or just want to share your thoughts, [ope
 [![Rust Version](https://img.shields.io/badge/rust-1.55%2B-orange.svg)](https://www.rust-lang.org)
 [![Awesome Rust](https://img.shields.io/badge/Awesome-Rust-8C271E.svg)](https://github.com/rust-unofficial/awesome-rust)
 
-> Shortcuts to enable/disable background sounds on macOS
+> TUI app to enable/disable background sounds on macOS
 
 🎧🔊 bg-sound is a Rust CLI application designed for macOS to control background sounds easily. It provides a user-friendly interface in the terminal, allowing users to enable or disable background sounds with just a few keystrokes.
 
