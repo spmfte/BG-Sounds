@@ -1,191 +1,119 @@
 use std::io;
-use tui::{
-    backend::CrosstermBackend,
-    layout::{Constraint, Direction, Layout, Rect},
-    style::{Color, Modifier, Style},
-    text::{Span, Spans},
-    widgets::{Block, Borders, List, ListItem, Paragraph},
-    Terminal,
-};
-use crossterm::event::{self, Event as CEvent, KeyCode};
-use std::sync::mpsc;
-use std::thread;
-use std::time::Duration;
+use std::process::Command;
+use termion::raw::IntoRawMode;
+use tui::backend::TermionBackend;
+use tui::layout::{Constraint, Direction, Layout, Rect};
+use tui::style::{Color, Modifier, Style};
+use tui::widgets::{Block, Borders, ListItem};
+use tui::Terminal;
+use tui::widgets::List;
+use tui::widgets::ListState;
 
-enum AppEvent<I> {
-    Input(I),
-}
 
 struct App {
     size: Rect,
     dialogue: bool,
-    sounds: Vec<&'static str>,
-    selected_sound: usize,
+    selected: usize,
+    items: Vec<String>,
     volume: u8,
+    state: ListState,
 }
 
-impl Default for App {
-    fn default() -> App {
+impl App {
+    fn new() -> App {
         App {
             size: Rect::default(),
             dialogue: false,
-            sounds: vec![
-                "Balanced Noise",
-                "Bright Noise",
-                "Dark Noise",
-                "Ocean",
-                "Rain",
-                "Stream",
+            selected: 0,
+            items: vec![
+                "Balanced Noise".into(),
+                "Bright Noise".into(),
+                "Dark Noise".into(),
+                "Ocean".into(),
+                "Rain".into(),
+                "Stream".into(),
             ],
-            selected_sound: 0,
-            volume: 50,
+            volume: 0,
+            state: ListState::default(),
         }
     }
 }
 
 fn main() -> Result<(), io::Error> {
-    let (tx, rx) = mpsc::channel();
-
-    thread::spawn(move || {
-        let tick_rate = Duration::from_millis(200);
-        loop {
-            if event::poll(tick_rate - Duration::from_millis(1)).unwrap() {
-                if let CEvent::Key(key) = event::read().unwrap() {
-                    tx.send(AppEvent::Input(key)).unwrap();
-                }
-            }
-        }
-    });
-
-    let stdout = io::stdout();
-    let backend = CrosstermBackend::new(stdout);
+    let stdout = io::stdout().into_raw_mode()?;
+    let backend = TermionBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    let mut app = App::default();
+    let mut app = App::new();
+
+    terminal.clear()?;
 
     loop {
-        terminal.draw(|f| {
+        terminal.draw(|mut f| {
             let chunks = Layout::default()
                 .direction(Direction::Vertical)
                 .margin(2)
-                .constraints(
-                    [
-                        Constraint::Percentage(10),
-                        Constraint::Percentage(80),
-                        Constraint::Percentage(10),
-                    ]
-                    .as_ref(),
-                )
+                .constraints([Constraint::Percentage(100)].as_ref())
                 .split(f.size());
 
-            let block = Block::default().title("Background Sounds").borders(Borders::ALL);
-            f.render_widget(block, chunks[0]);
-
-            let items: Vec<ListItem> = app.sounds
-                .iter()
-                .map(|i| {
-                    ListItem::new(vec![Spans::from(Span::styled(
-                        *i,
-                        Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
-                    ))])
-                })
-                .collect();
-
-            let sounds_list = List::new(items)
+            let items: Vec<_> = app.items.iter().map(|i| ListItem::new(i.as_str())).collect();
+            app.state.select(Some(app.selected));
+            let list = tui::widgets::List::new(items)
                 .block(Block::default().borders(Borders::ALL).title("Select a sound"))
-                .highlight_style(
-                    Style::default()
-                        .fg(Color::Yellow)
-                        .add_modifier(Modifier::BOLD),
-                )
+                .highlight_style(Style::default().fg(Color::LightCyan).add_modifier(Modifier::BOLD))
                 .highlight_symbol(">>");
 
-            f.render_stateful_widget(sounds_list, chunks[1], &mut app.selected_sound);
-
-            let quit_block = Block::default().title("Press 'q' to quit").borders(Borders::ALL);
-            f.render_widget(quit_block, chunks[2]);
-
-            // Let's also display the volume level
-            let volume_str = format!(
-                "Volume: [{}{}] {}%",
-                "#".repeat(app.volume as usize / 10),
-                " ".repeat(10 - app.volume as usize / 10),
-                app.volume
-            );
-            let volume_paragraph = Paragraph::new(volume_str)
-                .style(Style::default().fg(Color::White))
-                .block(Block::default().borders(Borders::ALL).title("Volume"));
-            f.render_widget(volume_paragraph, chunks[2]);
+            f.render_stateful_widget(list, chunks[0], &mut app.state);
         })?;
 
-        match rx.recv()? {
-            AppEvent::Input(event) => match event.code {
-                KeyCode::Char('q') => {
-                    break;
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+
+        if input.trim() == "quit" {
+            break;
+        }
+
+        match input.trim().parse::<usize>() {
+            Ok(i) if i > 0 && i <= app.items.len() => {
+                app.selected = i - 1;
+
+                // Turn on/off the background sounds
+                let output = if app.selected % 2 == 0 {
+                    Command::new("defaults")
+                        .arg("write")
+                        .arg("com.apple.ComfortSounds")
+                        .arg("comfortSoundsEnabled")
+                        .arg("-bool")
+                        .arg("true")
+                        .output()
+                        .expect("Failed to turn on the sound")
+                } else {
+                    Command::new("defaults")
+                        .arg("write")
+                        .arg("com.apple.ComfortSounds")
+                        .arg("comfortSoundsEnabled")
+                        .arg("-bool")
+                        .arg("false")
+                        .output()
+                        .expect("Failed to turn off the sound")
+                };
+
+                // Signal the process to re-read the configuration
+                Command::new("launchctl")
+                    .arg("kill")
+                    .arg("SIGHUP")
+                    .arg("gui/501/com.apple.accessibility.heard")
+                    .output()
+                    .expect("Failed to signal the process");
+
+                if !output.status.success() {
+                    eprintln!("Command executed with error: {}", output.status);
                 }
-                KeyCode::Down => {
-                    app.selected_sound = if app.selected_sound >= app.sounds.len() - 1 {
-                        app.sounds.len() - 1
-                    } else {
-                        app.selected_sound + 1
-                    };
-                }
-                KeyCode::Up => {
-                    app.selected_sound = if app.selected_sound > 0 {
-                        app.selected_sound - 1
-                    } else {
-                        0
-                    };
-                }
-                KeyCode::Enter => {
-                    // Call the function to play sound here
-                    play_sound(&app.sounds[app.selected_sound]);
-                }
-                KeyCode::Char('-') => {
-                    app.volume = app.volume.saturating_sub(10);
-                    // Set the volume here
-                    set_volume(app.volume);
-                }
-                KeyCode::Char('+') => {
-                    app.volume = (app.volume + 10).min(100);
-                    // Set the volume here
-                    set_volume(app.volume);
-                }
-                _ => {}
-            },
+            }
+            _ => eprintln!("Invalid input"),
         }
     }
 
     Ok(())
-}
-
-fn play_sound(sound: &str) {
-    let _ = Command::new("sh")
-        .arg("-c")
-        .arg(format!("defaults write com.apple.ComfortSounds ComfortSoundsSelectedSound -string {}", sound))
-        .output()
-        .expect("Failed to set background sound");
-        
-    let _ = Command::new("sh")
-        .arg("-c")
-        .arg("launchctl kill SIGHUP gui/$(id -u)/com.apple.accessibility.heard")
-        .output()
-        .expect("Failed to send signal");
-}
-
-fn set_volume(volume: i32) {
-    let volume_f64 = volume as f64 / 100.0;
-    
-    let _ = Command::new("sh")
-        .arg("-c")
-        .arg(format!("defaults write com.apple.ComfortSounds relativeVolume -float {}", volume_f64))
-        .output()
-        .expect("Failed to set volume");
-        
-    let _ = Command::new("sh")
-        .arg("-c")
-        .arg("launchctl kill SIGHUP gui/$(id -u)/com.apple.accessibility.heard")
-        .output()
-        .expect("Failed to send signal");
 }
 
