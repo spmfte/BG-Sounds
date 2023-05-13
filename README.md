@@ -1,3 +1,33 @@
+> **Notice: This project is currently a work in progress**
+
+🚧 Oh, hello there! So you stumbled upon `bg-sound`, huh?
+
+Well, I should probably address the quirks and known issues. Since it's just me tinkering away, things can get interesting. Here's what you should know:
+
+Known issues:
+- The visualizer widget? It's like modern art. Hard to understand and doesn't quite work as intended.
+- Volume control? Mind of its own. It's an adventure trying to get it to behave.
+- Oh, and the background sound? Doesn't actively change while the application is running. Because _Consistency is key around here._
+
+But hey, if you're feeling up to the challenge, I won't stop you. Consider it a solo mission! And if you manage to fix something, I'll be eternally grateful.
+
+Your contributions are always welcome! So, if you're up for it, here's how you can get involved:
+
+1. Fork the repository to your GitHub account.
+2. Clone the forked repository to your local machine.
+3. Create a new branch for your changes.
+4. Work your magic and make those improvements.
+5. Test your changes—because bugs love surprises.
+6. Commit your changes with some pizzazz and descriptive messages.
+7. Push your changes to your forked repository.
+8. Submit a pull request to my repository, and I'll give it some love.
+
+Now, I can't promise that everything will go smoothly, but life is an adventure, right? I appreciate all and any future support, feedback, and contributions in making this project less quirky and more awesome.
+
+If you encounter any additional quirks or just want to share your thoughts, [open an issue](https://github.com/spmfte/bg-sound/issues) or reach out to me.
+
+---
+
 # bg-sound
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -12,6 +42,10 @@
 > Shortcuts to enable/disable background sounds on macOS
 
 🎧🔊 bg-sound is a Rust CLI application designed for macOS to control background sounds easily. It provides a user-friendly interface in the terminal, allowing users to enable or disable background sounds with just a few keystrokes.
+
+<p align="center">
+  <img src="bgsdemo.png" alt="Demo" width="400">
+</p>
 
 ## Features
 
