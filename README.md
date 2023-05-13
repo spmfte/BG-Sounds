@@ -97,6 +97,11 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 Contributions are welcome! Please check out the [Contribution Guidelines](CONTRIBUTING.md) for more information.
 
+## Contributors
+
+<!-- Add contributors' avatars and names below: -->
+[<img src="https://avatars.githubusercontent.com/spmfte" width="64px" alt="Avatar of spmfte">](https://github.com/spmfte)  
+
 ## Support
 
-If you encounter any issues or have any questions, feel free to [open an issue](https://github.com/spmfte/bg-sound/issues) or reach out to us.
+If you encounter any issues or have any questions, feel free to [open an issue](https://github.com/spmfte/bg-sound/issues) or reach out to me.
