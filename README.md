@@ -89,10 +89,6 @@ Once you have installed `bg-sound`, you can use the following keyboard shortcuts
 - `Enter`: Toggle the status of background sounds
 - `Ctrl + C`: Quit the application
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ## Contributing
 
 Contributions are welcome! Please check out the [Contribution Guidelines](CONTRIBUTING.md) for more information.
@@ -101,6 +97,12 @@ Contributions are welcome! Please check out the [Contribution Guidelines](CONTRI
 
 <!-- Add contributors' avatars and names below: -->
 [<img src="https://avatars.githubusercontent.com/spmfte" width="64px" alt="Avatar of spmfte">](https://github.com/spmfte)  
+
+## License
+
+Copyright (c) 2023 Aidan Littman
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Support
 
