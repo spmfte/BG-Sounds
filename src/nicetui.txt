@@ -4,20 +4,19 @@ use termion::raw::IntoRawMode;
 use tui::backend::TermionBackend;
 use tui::layout::{Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Modifier, Style};
-use tui::widgets::{Block, Borders, Gauge, ListItem, Paragraph};
-use tui::widgets::canvas::Canvas;
+use tui::widgets::{Block, Borders, ListItem, Paragraph};
 use tui::Terminal;
 use tui::widgets::ListState;
 use termion::input::TermRead;
 use termion::event::Key;
-use rand::Rng;
+
 
 struct App {
     size: Rect,
     dialogue: bool,
     selected: usize,
     items: Vec<String>,
-    volume: u16,
+    volume: u8,
     state: ListState,
     sound_playing: bool,
 }
@@ -58,12 +57,7 @@ fn main() -> Result<(), io::Error> {
             let chunks = Layout::default()
                 .direction(Direction::Vertical)
                 .margin(2)
-                .constraints([
-                    Constraint::Percentage(30),  // Changed percentages to add up to 100
-                    Constraint::Percentage(20),
-                    Constraint::Percentage(20),
-                    Constraint::Percentage(30),  // Added new constraint
-                ].as_ref())
+                .constraints([Constraint::Percentage(80), Constraint::Percentage(20)].as_ref())
                 .split(f.size());
 
             let items: Vec<_> = app.items.iter().map(|i| ListItem::new(i.as_str())).collect();
@@ -84,28 +78,6 @@ fn main() -> Result<(), io::Error> {
             let paragraph = Paragraph::new(message)
                 .block(Block::default().borders(Borders::ALL).title("Status"));
             f.render_widget(paragraph, chunks[1]);
-
-            let gauge = Gauge::default()
-                .block(Block::default().title("Volume"))
-                .gauge_style(Style::default().fg(Color::Yellow))
-                .percent(app.volume);
-            f.render_widget(gauge, chunks[2]);
-
-            let mut rng = rand::thread_rng();
-            let random_values: Vec<(f64, f64)> = (0..10).map(|i| (i as f64, rng.gen_range(0.0..100.0))).collect();
-
-            let canvas = Canvas::default()
-                .block(Block::default().title("Visualizer"))
-                .paint(|ctx| {
-                    let points = tui::widgets::canvas::Points { coords: &random_values, color: Color::White };
-                    ctx.draw(&points);
-        })
-        .x_bounds([0.0, 10.0])
-        .y_bounds([0.0, 100.0]);
-
-f.render_widget(canvas, chunks[3]);
-
-
         })?;
 
         let input = stdin.next();
@@ -122,54 +94,48 @@ f.render_widget(canvas, chunks[3]);
                         app.selected -= 1;
                     }
                 }
-                Key::Char('u') => {
-                    if app.volume < 100 {
-                        app.volume += 1;
-                    }
-                }
-                Key::Char('d') => {
-                    if app.volume > 0 {
-                        app.volume -= 1;
-                    }
-                }
                 Key::Char('\n') => {
                     app.sound_playing = !app.sound_playing;
-    
-                    let sound_option = &app.items[app.selected];
-                    let enable = app.sound_playing; // Change this to false to disable
+                    
+                    let output = if app.selected % 2 == 0 {
+                        Command::new("defaults")
+                            .arg("write")
+                            .arg("com.apple.ComfortSounds")
+                            .arg("comfortSoundsEnabled")
+                            .arg("-bool")
+                            .arg("true")
+                            .output()
+                            .expect("Failed to turn on the sound")
+                    } else {
+                        Command::new("defaults")
+                            .arg("write")
+                            .arg("com.apple.ComfortSounds")
+                            .arg("comfortSoundsEnabled")
+                            .arg("-bool")
+                            .arg("false")
+                            .output()
+                            .expect("Failed to turn off the sound")
+                    };
 
-                    let status = Command::new("defaults")
-                        .arg("write")
-                        .arg("com.apple.ComfortSounds")
-                        .arg("comfortSoundsEnabled")
-                        .arg("-bool")
-                        .arg(enable.to_string())
-                        .status()?;
-
-                    if !status.success() {
-                        eprintln!("Failed to write to com.apple.ComfortSounds");
-                    }
-
-                    let status = Command::new("launchctl")
+                    Command::new("launchctl")
                         .arg("kill")
                         .arg("SIGHUP")
                         .arg("gui/501/com.apple.accessibility.heard")
-                        .status()?;
+                        .output()
+                        .expect("Failed to signal the process");
 
-                    if !status.success() {
-                        eprintln!("Failed to send SIGHUP to com.apple.accessibility.heard");
+                    if !output.status.success() {
+                        eprintln!("Command executed with error: {}", output.status);
                     }
                 }
-
                 Key::Ctrl('c') => {
-                    terminal.clear()?;
                     break;
                 }
                 _ => {}
             }
         }
     }
+
     Ok(())
 }
-
 
