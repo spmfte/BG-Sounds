@@ -1,0 +1,39 @@
+use std::process::Command;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Enable or disable background sounds
+    let enable = true; // Change this to false to disable
+
+    let status = Command::new("defaults")
+        .arg("write")
+        .arg("com.apple.ComfortSounds")
+        .arg("comfortSoundsEnabled")
+        .arg("-bool")
+        .arg(enable.to_string())
+        .status()?;
+
+    if !status.success() {
+        return Err(Box::new(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "Failed to write to com.apple.ComfortSounds",
+        )));
+    }
+
+    let status = Command::new("launchctl")
+        .arg("kill")
+        .arg("SIGHUP")
+        .arg("gui/501/com.apple.accessibility.heard")
+        .status()?;
+
+    if !status.success() {
+        return Err(Box::new(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "Failed to send SIGHUP to com.apple.accessibility.heard",
+        )));
+    }
+
+    println!("Background sounds toggled successfully!");
+
+    Ok(())
+}
+
