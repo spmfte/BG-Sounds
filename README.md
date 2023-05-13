@@ -11,18 +11,9 @@ Known issues:
 
 But hey, if you're feeling up to the challenge, I won't stop you. Consider it a solo mission! And if you manage to fix something, I'll be eternally grateful.
 
-Your contributions are always welcome! So, if you're up for it, here's how you can get involved:
+Your contributions are always welcome! So, if you're up for it, check out the [Contributing Guidelines](https://github.com/spmfte/BG-Sounds/blob/main/CONTRIBUTING.md)
 
-1. Fork the repository to your GitHub account.
-2. Clone the forked repository to your local machine.
-3. Create a new branch for your changes.
-4. Work your magic and make those improvements.
-5. Test your changes—because bugs love surprises.
-6. Commit your changes with some pizzazz and descriptive messages.
-7. Push your changes to your forked repository.
-8. Submit a pull request to my repository, and I'll give it some love.
-
-Now, I can't promise that everything will go smoothly, but life is an adventure, right? I appreciate all and any future support, feedback, and contributions in making this project less quirky and more awesome.
+Now, I can't promise that everything will go smoothly, in fact I anticipate quite the opposite. I appreciate all and any future support, feedback, and contributions in making this project less quirky and more awesome.
 
 If you encounter any additional quirks or just want to share your thoughts, [open an issue](https://github.com/spmfte/bg-sound/issues) or reach out to me.
 
@@ -36,7 +27,7 @@ If you encounter any additional quirks or just want to share your thoughts, [ope
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/your-username/bg-sound/pulls)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/your-username/bg-sound/graphs/commit-activity)
 [![Documentation](https://img.shields.io/badge/docs-yes-brightgreen.svg)](https://your-username.github.io/bg-sound)
-[![Rust Version](https://img.shields.io/badge/rust-1.55.0-orange.svg)](https://www.rust-lang.org)
+[![Rust Version](https://img.shields.io/badge/rust-1.55%2B-orange.svg)](https://www.rust-lang.org)
 [![Awesome Rust](https://img.shields.io/badge/Awesome-Rust-8C271E.svg)](https://github.com/rust-unofficial/awesome-rust)
 
 > Shortcuts to enable/disable background sounds on macOS
