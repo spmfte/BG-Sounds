@@ -1,6 +1,6 @@
 > **🚧 Notice: This project is currently a work in progress** 
 
-Well, I should probably address the quirks and known issues. Since it's just me tinkering away, things can get interesting. Here's what you should know:
+Works like 20% of the time for some reason.
 
 Known issues:
 - The visualizer widget doesn't work and is confusing
