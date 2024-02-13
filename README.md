@@ -1,22 +1,11 @@
-> **Notice: This project is currently a work in progress**
-
-🚧 Oh, hello there! So you stumbled upon `bg-sound`, huh?
+> **🚧 Notice: This project is currently a work in progress** 
 
 Well, I should probably address the quirks and known issues. Since it's just me tinkering away, things can get interesting. Here's what you should know:
 
 Known issues:
-- The visualizer widget? It's like modern art. Hard to understand and doesn't quite work as intended.
-- Volume control? Mind of its own. It's an adventure trying to get it to behave.
-- Oh, and the background sound? Doesn't actively change while the application is running. Because _Consistency is key around here._
-
-But hey, if you're feeling up to the challenge, I won't stop you. Consider it a solo mission! And if you manage to fix something, I'll be eternally grateful.
-
-Your contributions are always welcome! So, if you're up for it, check out the [Contributing Guidelines](https://github.com/spmfte/BG-Sounds/blob/main/CONTRIBUTING.md)
-
-Now, I can't promise that everything will go smoothly, in fact I anticipate quite the opposite. I appreciate all and any future support, feedback, and contributions in making this project less quirky and more awesome.
-
-If you encounter any additional quirks or just want to share your thoughts, [open an issue](https://github.com/spmfte/bg-sound/issues) or reach out to me.
-
+- The visualizer widget doesn't work and is confusing
+- Volume control likes to misbehace
+- Doesn't actively change while the application is running.
 ---
 
 # bg-sound
