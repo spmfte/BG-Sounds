@@ -9,4 +9,5 @@ edition = "2021"
 tui = { version = "0.15.0", features = ["termion"] }
 termion = "1.5.6"
 rand = "0.8"
-
+lazy_static = "1.4"
+users = "0.10"

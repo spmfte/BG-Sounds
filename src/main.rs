@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::io;
 use std::process::Command;
 use termion::raw::IntoRawMode;
@@ -11,6 +12,19 @@ use tui::widgets::ListState;
 use termion::input::TermRead;
 use termion::event::Key;
 use rand::Rng;
+
+lazy_static::lazy_static! {
+    static ref SOUND_MAPPINGS: HashMap<&'static str, &'static str> = {
+        let mut m = HashMap::new();
+        m.insert("Balanced Noise", "{length = 1720, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000596}");
+        m.insert("Bright Noise", "{length = 1726, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 0000059a}");
+        m.insert("Dark Noise", "{length = 1726, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 0000059a}");
+        m.insert("Ocean", "{length = 1721, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000595}");
+        m.insert("Rain", "{length = 1720, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000594}");
+        m.insert("Stream", "{length = 1722, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000596}");
+        m
+    };
+}
 
 struct App {
     size: Rect,
@@ -59,10 +73,10 @@ fn main() -> Result<(), io::Error> {
                 .direction(Direction::Vertical)
                 .margin(2)
                 .constraints([
-                    Constraint::Percentage(30),  // Changed percentages to add up to 100
+                    Constraint::Percentage(30),
                     Constraint::Percentage(20),
                     Constraint::Percentage(20),
-                    Constraint::Percentage(30),  // Added new constraint
+                    Constraint::Percentage(30),
                 ].as_ref())
                 .split(f.size());
 
@@ -99,13 +113,11 @@ fn main() -> Result<(), io::Error> {
                 .paint(|ctx| {
                     let points = tui::widgets::canvas::Points { coords: &random_values, color: Color::White };
                     ctx.draw(&points);
-        })
-        .x_bounds([0.0, 10.0])
-        .y_bounds([0.0, 100.0]);
+                })
+                .x_bounds([0.0, 10.0])
+                .y_bounds([0.0, 100.0]);
 
-f.render_widget(canvas, chunks[3]);
-
-
+            f.render_widget(canvas, chunks[3]);
         })?;
 
         let input = stdin.next();
@@ -134,10 +146,24 @@ f.render_widget(canvas, chunks[3]);
                 }
                 Key::Char('\n') => {
                     app.sound_playing = !app.sound_playing;
-    
-                    let sound_option = &app.items[app.selected];
-                    let enable = app.sound_playing; // Change this to false to disable
 
+                    let sound_option = &app.items[app.selected];
+                    if let Some(sound_data) = SOUND_MAPPINGS.get(sound_option.as_str()) {
+                        // Write the sound data
+                        let status = Command::new("defaults")
+                            .arg("write")
+                            .arg("com.apple.ComfortSounds")
+                            .arg("ComfortSoundsSelectedSound")
+                            .arg("-data")
+                            .arg(sound_data)
+                            .status()?;
+
+                        if !status.success() {
+                            eprintln!("Failed to set the sound data for {}", sound_option);
+                        }
+                    }
+
+                    let enable = app.sound_playing;
                     let status = Command::new("defaults")
                         .arg("write")
                         .arg("com.apple.ComfortSounds")
@@ -153,14 +179,13 @@ f.render_widget(canvas, chunks[3]);
                     let status = Command::new("launchctl")
                         .arg("kill")
                         .arg("SIGHUP")
-                        .arg("gui/501/com.apple.accessibility.heard")
+                        .arg(format!("gui/{}/com.apple.accessibility.heard", users::get_current_uid()))
                         .status()?;
 
                     if !status.success() {
                         eprintln!("Failed to send SIGHUP to com.apple.accessibility.heard");
                     }
                 }
-
                 Key::Ctrl('c') => {
                     terminal.clear()?;
                     break;
@@ -171,5 +196,4 @@ f.render_widget(canvas, chunks[3]);
     }
     Ok(())
 }
-
 

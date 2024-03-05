@@ -1,0 +1,52 @@
+    [balanced noise]
+☁  ~  defaults read com.apple.ComfortSounds ComfortSoundsSelectedSound
+{length = 1720, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000596 }
+☁  ~
+
+    [bright noise]
+☁  ~  defaults read com.apple.ComfortSounds ComfortSoundsSelectedSound
+{length = 1726, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 0000059a }
+☁  ~
+
+    [dark noise]
+☁  ~  defaults read com.apple.ComfortSounds ComfortSoundsSelectedSound
+{length = 1726, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 0000059a }
+☁  ~
+
+    [ocean]
+☁  ~  defaults read com.apple.ComfortSounds ComfortSoundsSelectedSound
+{length = 1721, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000595 }
+☁  ~
+
+    [rain]
+☁  ~  defaults read com.apple.ComfortSounds ComfortSoundsSelectedSound
+{length = 1720, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000594 }
+☁  ~
+
+    [stream]
+☁  ~  defaults read com.apple.ComfortSounds ComfortSoundsSelectedSound
+{length = 1722, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000596 }
+☁  ~
+
+
+    [Disabled]
+☁  ~  defaults read com.apple.ComfortSounds
+{
+    ComfortSoundsSelectedSound = {length = 1722, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000596 };
+    comfortSoundsEnabled = 0;
+    lastEnablementTimestamp = "1695949458.581758";
+    relativeVolume = 1;
+}
+☁  ~
+
+
+    [Enabled]
+☁  ~  defaults read com.apple.ComfortSounds
+{
+    ComfortSoundsSelectedSound = {length = 1722, bytes = 0x62706c69 73743030 d4010203 04050607 ... 00000000 00000596 };
+    comfortSoundsEnabled = 1;
+    lastEnablementTimestamp = "1695949832.602057";
+    relativeVolume = 1;
+}
+☁  ~
+
